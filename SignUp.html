@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <title>Weather_SignUp</title>
+    <link rel="stylesheet" href="SignUp.css">
+    </head>
+    <body>
+        <div class="form">
+            First_Name<input type="text" id="firstname"><br>
+            Last_Name<input type="text" id="lastname"><br>
+            UserName<input type="text" id="username"><br>
+            Password<input type="password" id="password"><br>
+            Ph_No<input type="tel" id="phone"><br>
+            <button onclick="register()">Register</button>
+            <p>Already have an account? <a href="SignIn.html">Sign In</a></p>
+        </div>
+        <script>
+            async function register() {
+            const firstname=document.getElementById("firstname").value;
+            const lastname=document.getElementById("lastname").value;
+            const username=document.getElementById("username").value;
+            const password=document.getElementById("password").value;
+            const phone=document.getElementById("phone").value;
+
+            const response=await fetch("http://127.0.0.1:8000/Signup",{
+                method:"POST",
+                headers: {
+                    "Content-Type":"application/json"
+                },
+                body:JSON.stringify({
+                    First_Name:firstname,
+                    Last_Name:lastname,
+                    UserName:username,
+                    Password:password,
+                    Ph_No:parseInt(phone,10)
+                })
+            });
+            const result=await response.json();
+            alert(result.Message);    
+            }
+        </script>
+    </body>
+</html>
