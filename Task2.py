@@ -21,8 +21,8 @@ class Signup(BaseModel):
     Ph_No:int
 
 class Login(BaseModel):
-    UserName:str
-    Password:str
+    username:str
+    password:str
 
 Pwd_Context=CryptContext(schemes=["bcrypt"],deprecated="auto")
 ALGORITHM="HS256"
@@ -52,9 +52,9 @@ async def SignUp(S:Signup):
     dtls=await clts.insert_one(S.dict())
     return {"Message":"User Registration Successfull","Details":S}
 
-class Signin(BaseModel):
-    UserName: str
-    Password: str
+# class Signin(BaseModel):
+#     username: str
+#     password: str
 
 async def Vrfy_Tkn(token: str):
     try:
@@ -64,25 +64,25 @@ async def Vrfy_Tkn(token: str):
         return None
     
 @app.post("/Signin")
-async def LogIn(signin:Signin):
-    user_data=await clts.find_one({"UserName":signin.UserName})
+async def LogIn(signin:Login):
+    user_data=await clts.find_one({"UserName":signin.username})
     hashed_password = user_data.get("Password")
-    if user_data and Pwd_Context.verify(signin.Password, hashed_password):
+    if user_data and Pwd_Context.verify(signin.password, hashed_password):
         now=datetime.utcnow()
         exp=now+timedelta(minutes=2)
-        payload={"Sub":signin.UserName,"iat":now,"exp":exp}
+        payload={"sub":signin.username,"iat":now,"exp":exp}
         token=jwt.encode(payload,secret_key,algorithm=ALGORITHM)
         return{"AccessToken":token,"Message":"Login Successfull"}
     else:
         return{"Message":"Invalid Credentials"}
     
 @app.get("/UserDetails")
-async def get_dtls(UserName:str,credentials:HTTPAuthorizationCredentials=Depends(Bearer)):
+async def get_dtls(username:str,credentials:HTTPAuthorizationCredentials=Depends(Bearer)):
 # async def get_dtls(UserName:str):
     token=credentials.credentials
     username=await Vrfy_Tkn(token)
     if username:
-        user_data=await clts.find_one({"UserName":UserName})
+        user_data=await clts.find_one({"UserName":username})
         user_data["_id"] = str(user_data["_id"])
         return {"Message":"Token is Active","Details":user_data}
     

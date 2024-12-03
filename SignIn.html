@@ -1,45 +1,128 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <title>Weather Details.signIn</title>
-        <link rel="stylesheet" href="SignIn.Css">
-    </head>
-    <body>
-        <div class="form">
-            <b>Username<input type="text" id="Username"><br>
-            Password<input type="password" id="Password"><br></b>
-            <button onclick="login()">Login</button>
-            <p>Don't have an account? <a href="SignUp.html">Sign Up</a></p>
-        </div> 
-        <script>
-            async function login(){
-            const username=document.getElementById("Username").value;
-            const password=document.getElementById("Password").value;
-
-            const response=await fetch("http://127.0.0.1:8000/Signin",{
-                method:"POST",
-                headers:{
-                    "Content-Type":"application/json"
-                },
-                body:JSON.stringify({
-                    UserName:username,
-                    Password:password
-                })
-            });
-            const res=await response.json();
-            console.log(res);
-            const token=res.AccessToken;
-            console.log(token);
-            localStorage.setItem("token",token);
-            // document.cookie = "token=" + token + "; path=/";
-            
-            alert(res.Message);
-            
-            if (response.status==200) {
-                window.location.href = "D:/Programming/JWT/Task2/IndexWeatherAPI.html";
-            }
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        </script>
-    </body>
-</html>
 
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .login-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        #login-form p{
+            margin-top: 25px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h2>Login</h2>
+        <form id="login-form">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" placeholder="Enter your username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter your password" required>
+            </div>
+            <button type="submit">Login</button>
+            <p>Don't have an account? </p>
+            <a href="SignUp.html">Create new Account</a>
+        </form>
+    </div>
+    <script>
+        // Add event listener to the form submission
+        document.getElementById('login-form').addEventListener('submit', async function(event) {
+            event.preventDefault(); // Prevent the form from submitting the default way
+
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+
+            try {
+                const response = await fetch("http://127.0.0.1:8000/Signin", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        username: username,
+                        password: password
+                    })
+                });
+
+                const res = await response.json();
+                console.log(res);
+                
+                if (response.status === 200) {
+                    const token = res.AccessToken;
+                    console.log(token);
+                    localStorage.setItem("token", token);
+                    alert(res.Message);
+                    window.location.href = "Index.html";
+                } else {
+                    alert(res.Message || "Login failed");
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                alert("An error occurred during login.");
+            }
+        });
+    </script>
+</body>
+</html>
